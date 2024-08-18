@@ -15,4 +15,9 @@ If your VM is on a AWS then add below Security Group
 <img width="1679" alt="image" src="https://github.com/user-attachments/assets/cbe27871-302d-4281-9d41-89b289c7213c">
 
 
+Application accessibility image
+
+<img width="1248" alt="image" src="https://github.com/user-attachments/assets/7d7abdd2-5c23-4c09-8d18-8267006e9efa">
+
+
 
