@@ -5,6 +5,10 @@ commands to run the application inside a docker container
 
 `docker run docker run -d -p 8080:8080 rahees9983/simple-webapp-color:v1`
 
+To pass the color value using environemt variable use the below docker command 
+
+``docker run -d -p 8080:8080 -e APP_COLOR=green rahees9983/simple-webapp-color:v1``
+
 To access the application via browser hit the below URL
 htpp://<IP-ADDRESS>:8080
 
