@@ -1,9 +1,18 @@
 import os
-from flask import Flask
+# from flask import Flask
 from flask import render_template
 import socket
 import random
-import os
+from flask import Flask, request, redirect, url_for, send_from_directory
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = '/usr/src/app' # You can pass this UPLOAD_FOLDER as environment varaible as well
+#/usr/src/app is the folder inside the container 
+# to pass this value inside docker command is use -e option eg. docker run --name akki -e UPLOAD_FOLDER="/usr/src/app" ur-img-name
+
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB limit
+
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 app = Flask(__name__)
 
@@ -33,6 +42,37 @@ def read_file():
     f = open("/data/testfile.txt")
     contents = f.read()
     return render_template('hello.html', name=socket.gethostname(), contents=contents, color=color_codes[color])
+
+@app.route('/upload-title')
+def index():
+    return render_template('fill-from.html')
+
+    # return '''
+    # <!doctype html>
+    # <title>Upload a File</title>
+    # <h1>Upload a File</h1>
+    # <form action="/upload" method=post enctype=multipart/form-data>
+    #   <input type=file name=file>
+    #   <input type=submit value=Upload>
+    # </form>
+    # '''
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return redirect(request.url)
+    file = request.files['file']
+    if file.filename == '':
+        return redirect(request.url)
+    if file:
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
+        # return f'File uploaded successfully: {file.filename}'
+        return render_template('sucessful-upload.html', uploaded_filename=file.filename)
+
+
+@app.route('/files/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port="8080")
