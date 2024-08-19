@@ -23,5 +23,6 @@ Application accessibility image
 
 <img width="1248" alt="image" src="https://github.com/user-attachments/assets/7d7abdd2-5c23-4c09-8d18-8267006e9efa">
 
+`$ docker run --name my-flask-app -e UPLOAD_FOLDER="/usr/src/app/upload" -e APP_COLOR="green" -p 8080:8080 flask-upload-file:v2`
 
 
