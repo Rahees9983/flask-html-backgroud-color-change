@@ -5,16 +5,15 @@ import socket
 import random
 from flask import Flask, request, redirect, url_for, send_from_directory
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = '/usr/src/app' # You can pass this UPLOAD_FOLDER as environment varaible as well
-#/usr/src/app is the folder inside the container 
+
+app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER', '/rahees-uploaded-files')
+#/rahees-uploaded-files is the folder inside the container (it will be created if it does not exists)
 # to pass this value inside docker command is use -e option eg. docker run --name akki -e UPLOAD_FOLDER="/usr/src/app" ur-img-name
 
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB limit
 
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
-
-app = Flask(__name__)
 
 color_codes = {
     "red": "#e74c3c",
@@ -68,7 +67,6 @@ def upload_file():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
         # return f'File uploaded successfully: {file.filename}'
         return render_template('sucessful-upload.html', uploaded_filename=file.filename)
-
 
 @app.route('/files/<filename>')
 def uploaded_file(filename):
