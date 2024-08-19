@@ -45,7 +45,7 @@ def read_file():
 
 @app.route('/upload-title')
 def index():
-    return render_template('fill-from.html')
+    return render_template('fill-form.html')
 
     # return '''
     # <!doctype html>
