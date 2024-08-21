@@ -25,7 +25,7 @@ Above commands explanation
 .: Uses the current directory as the build context.
 ```
 
-#### Additional Options and Flags
+#### <span style="color: green;">Additional Options and Flags</span>
 > [!NOTE]
 > **-t, --tag:** Tags the image with a name and optionally a tag in the format name:tag.
 > 
@@ -75,7 +75,9 @@ Docker stores login credentials in a configuration file located at ~/.docker/con
 ```
 #### Common Use Cases
 **Push and Pull Images:** Authenticate to push images to or pull images from a private Docker registry or Docker Hub.
+
 **Automation:** Use docker login in scripts and CI/CD pipelines to automate deployments and image management.
+
 **Access Control:** Ensure that only authenticated users can access private images and repositories.
 
 ----
@@ -128,7 +130,9 @@ docker save -o all_images.tar myimage:latest anotherimage:latest
 ```
 #### Common Use Cases
 **Backup Docker Images:** Create backups of important Docker images to ensure they can be restored if needed.
+
 **Transfer Images:** Share Docker images between systems or environments by exporting them to a tarball file and transferring the file.
+
 **Archival:** Archive Docker images for long-term storage or compliance purposes.
 
 <img width="958" alt="image" src="https://github.com/user-attachments/assets/a94e15a2-6878-4b37-8542-cb6a05ba3b89">
@@ -181,11 +185,14 @@ tar -tf container-export.tar
 ```
 ##### Common Use Cases
 **Backup Container Filesystem:** Create backups of the container’s filesystem to preserve its state or configuration.
+
 **Transfer Container State:** Share the container's filesystem with others by exporting it to a tarball file.
+
 **Archive:** Archive the container’s state for compliance or long-term storage purposes.
 
 ##### Difference Between docker export and docker save
 **docker export:** Exports the filesystem of a container. It does not include metadata or image history and is specific to the container’s current state.
+
 **docker save:** Exports the image and its layers, including metadata and history, but not the state of any specific container.
 
 <img width="1425" alt="image" src="https://github.com/user-attachments/assets/c5e8498c-cd31-4130-82ad-134e2c482635">
@@ -209,7 +216,9 @@ docker commit -a "Rahees Khan <john.doe@example.com>" abc123 mynewimage:v1
 ```
 ##### Common Use Cases
 **Save Changes:** Capture changes made to a container's filesystem after it has been started.
+
 **Create Custom Images:** Build custom Docker images that include updates or modifications specific to your use case.
+
 **Reproduce Environments:** Save the state of a container to reproduce the environment or configuration across different systems or teams.
 
 <img width="1475" alt="image" src="https://github.com/user-attachments/assets/f1f9d908-a27b-4c3e-8933-7b9354fdc1bc">
@@ -259,12 +268,9 @@ If your VM is on a AWS then add below Security Group
 
 <img width="1679" alt="image" src="https://github.com/user-attachments/assets/cbe27871-302d-4281-9d41-89b289c7213c">
 
-
 Application accessibility image
 
-
 <img width="1248" alt="image" src="https://github.com/user-attachments/assets/7d7abdd2-5c23-4c09-8d18-8267006e9efa">
-
 
 `$ docker run --name my-flask-app -e UPLOAD_FOLDER="/usr/src/app/upload" -e APP_COLOR="green" -p 8080:8080 flask-upload-file:v2`
 
@@ -578,7 +584,7 @@ docker port container
 ```
 <img width="1632" alt="image" src="https://github.com/user-attachments/assets/2d54b98e-effb-47f5-bda8-7e51940eb5ec">
 
-### Common Use Cases
+### <span style="color: green;">Common Use Cases.</span>
 > [!TIP]
 > **Debugging:** Verifying that the container’s ports are mapped correctly to the host ports, especially when troubleshooting connectivity issues.
 >
