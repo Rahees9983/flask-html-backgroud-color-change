@@ -7,6 +7,241 @@ There is one more feature in this application you can upload file and can store 
 Inside app.py I have defined a varaible named `UPLOAD_FOLDER` which holds the value for the folder name where we want to store the file inside container. The value of `UPLOAD_FOLDER` is hardcoded to `/rahees-uploaded-files` inside app.py this folder will be created inside the container. If you want to pass any other path to store the files you can pass it using environment variable.
 
 ----
+### Docker build
+The docker build command is used to create a Docker image from a Dockerfile. 
+```
+docker build -t image-name:tag .
+docker build -f Dockerfile.dev -t myapp:dev .
+docker build -f Dockerfile.prod -t myapp:prod .
+docker build --build-arg MY_VAR=value -t myapp:1.0 .
+docker build --no-cache -t myapp:1.0 .
+```
+Above commands explanation
+```
+-f Dockerfile.dev: Specifies the Dockerfile to use for the build.
+
+-t myapp:dev: Tags the image as myapp with the tag dev.
+
+.: Uses the current directory as the build context.
+```
+
+#### Additional Options and Flags
+> [!NOTE]
+> **-t, --tag:** Tags the image with a name and optionally a tag in the format name:tag.
+> 
+> **-f, --file:** Specifies a different Dockerfile name or path (default is Dockerfile).
+>
+> **--build-arg:** Passes build-time arguments to the Dockerfile.
+>
+> **--no-cache:** Ignores cache when building the image.
+>
+> **--rm:** Removes intermediate containers after a successful build (default behavior).
+>
+> **--target:** Builds a specific stage from a multi-stage Dockerfile.
+
+----
+### Docker login
+The docker login command is used to authenticate with a Docker registry. This allows you to pull images from or push images to a private Docker registry, such as Docker Hub, or a custom registry.
+
+Basic Usage of docker login
+1. Login to Docker Hub
+```
+docker login
+```
+2. Login to a Custom Docker Registry
+3. Use --password-stdin for Secure Login  
+To securely provide your password from stdin, use:
+```
+echo "mypassword" | docker login myregistry.example.com -u myusername --password-stdin
+echo "Rahees-ka-pass" | docker login docker.io/rahees9983 -u rahees9983 --password-stdin
+```
+This method avoids exposing your password in the command line history.
+
+<img width="906" alt="image" src="https://github.com/user-attachments/assets/514bff14-879e-480d-b2f9-5f01a3edb667">
+
+##### Managing Credentials
+Docker stores login credentials in a configuration file located at ~/.docker/config.json. This file contains authentication tokens and is used for subsequent login sessions. The file may look like:
+```
+{
+  "auths": {
+    "https://index.docker.io/v1/": {
+      "auth": "dXNlcjpwYXNzd29yZA=="
+    },
+    "myregistry.example.com": {
+      "auth": "dXNlcjpwYXNzd29yZA=="
+    }
+  }
+}
+```
+#### Common Use Cases
+**Push and Pull Images:** Authenticate to push images to or pull images from a private Docker registry or Docker Hub.
+**Automation:** Use docker login in scripts and CI/CD pipelines to automate deployments and image management.
+**Access Control:** Ensure that only authenticated users can access private images and repositories.
+
+----
+### Docker tag
+The docker tag command is used to create a new tag for an existing Docker image. Tags are useful for organizing and managing images, allowing you to refer to images by a name and version (or other identifiers) rather than by their image ID.
+
+Basic Usage of docker tag
+1. Basic Syntax
+The general syntax for tagging an image is:
+```
+docker tag SOURCE_IMAGE[:TAG] TARGET_IMAGE[:TAG]
+```
+SOURCE_IMAGE[:TAG]: The existing image you want to tag. If no TAG is specified, the latest tag is used by default.
+TARGET_IMAGE[:TAG]: The new tag you want to assign to the image.
+2. Tag and push an Image
+```
+docker tag myimage:latest mynewimage:v1.0
+docker images | grep hello-world
+docker tag hello-world:latest rahees9983/hello-world:v1.1
+docker images | grep hello-world
+docker login
+docker push rahees9983/hello-world:v1.1
+```
+<img width="1727" alt="image" src="https://github.com/user-attachments/assets/c9998d46-999d-42cb-a75c-b3aece63c060">
+
+<img width="1728" alt="image" src="https://github.com/user-attachments/assets/c6cf971c-1e84-4277-82ad-a4581164a2f8">
+
+----
+### Docker save
+The docker save command is used to export Docker images to a tarball file, which can then be shared or archived. This is particularly useful for moving Docker images between environments or backing up images.
+
+Basic Usage of docker save
+1. Syntax
+The basic syntax for the docker save command is:
+```
+docker save -o <output_file> <image_name>[:tag]
+```
+#### -o <output_file>: Specifies the file path where the tarball will be saved.
+#### <image_name>[:tag]: The name (and optionally the tag) of the Docker image you want to save. If no tag is provided, Docker defaults to the latest tag.
+##### Example Commands
+1. Save a Single Image
+To save a Docker image named myimage with the tag latest to a file named myimage.tar:
+```
+docker save -o myimage.tar myimage:latest
+```
+2. Save Multiple Images
+To save multiple images into a single tarball file:
+```
+docker save -o all_images.tar myimage:latest anotherimage:latest
+```
+#### Common Use Cases
+**Backup Docker Images:** Create backups of important Docker images to ensure they can be restored if needed.
+**Transfer Images:** Share Docker images between systems or environments by exporting them to a tarball file and transferring the file.
+**Archival:** Archive Docker images for long-term storage or compliance purposes.
+
+<img width="958" alt="image" src="https://github.com/user-attachments/assets/a94e15a2-6878-4b37-8542-cb6a05ba3b89">
+
+----
+### Docker load
+The docker load command is used to import Docker images from a tarball file, which was previously exported using docker save. This command is useful for restoring Docker images, transferring images between environments, or setting up Docker images on a new system.
+
+Basic Usage of docker load
+1. Syntax
+The basic syntax for the docker load command is:
+```
+docker load -i <input_file>
+```
+-i <input_file>: Specifies the file path of the tarball that contains the Docker image you want to load.
+
+To load the Docker image from hello-world.tar:
+```
+docker load -i hello-world.tar
+```
+<img width="1090" alt="image" src="https://github.com/user-attachments/assets/a556712c-1d77-45c4-8e25-180f1dc0e9cb">
+
+----
+### Docker export and import
+The docker export command is used to create a tarball of a Docker container's filesystem. This command is useful for exporting the state of a container's file system to a file, which can then be transferred or archived. Unlike docker save, which exports Docker images, docker export deals specifically with the container's filesystem at a point in time.
+
+Basic Usage of docker export
+1. Syntax
+The basic syntax for the docker export command is:
+```
+docker export [OPTIONS] CONTAINER_ID_or_NAME > <output_file>
+```
+CONTAINER_ID_or_NAME: The ID or name of the running or stopped container you want to export.
+> <output_file>: Redirects the output to a file. Alternatively, you can use the -o option to specify the output file directly.
+
+2. Example Commands
+Export a Container to a Tarball
+
+To export a container with the ID myapp to a tarball file named container-export.tar:
+```
+docker export myapp > container-export.tar
+or use -o
+docker export myapp -o container-export.tar
+```
+Extract and Inspect the Tarball
+
+You can extract and inspect the contents of the tarball using:
+```
+tar -tf container-export.tar
+```
+##### Common Use Cases
+**Backup Container Filesystem:** Create backups of the container’s filesystem to preserve its state or configuration.
+**Transfer Container State:** Share the container's filesystem with others by exporting it to a tarball file.
+**Archive:** Archive the container’s state for compliance or long-term storage purposes.
+
+##### Difference Between docker export and docker save
+**docker export:** Exports the filesystem of a container. It does not include metadata or image history and is specific to the container’s current state.
+**docker save:** Exports the image and its layers, including metadata and history, but not the state of any specific container.
+
+<img width="1425" alt="image" src="https://github.com/user-attachments/assets/c5e8498c-cd31-4130-82ad-134e2c482635">
+
+----
+### Docker commit
+The docker commit command is used to create a new image from an existing container. This is useful for capturing changes made to a container's filesystem after it has been started from an image. You can think of docker commit as a way to "snapshot" a container's state and turn it into a reusable Docker image.
+
+Basic Usage of docker commit
+1. Syntax
+The basic syntax for the docker commit command is:
+```
+docker commit [OPTIONS] CONTAINER_ID_or_NAME [REPOSITORY[:TAG]]
+```
+2. Example Commands
+Create a New Image from a Container
+```
+docker commit abc123 mynewimage:v1
+docker commit -m "Added new feature" abc123 mynewimage:v1
+docker commit -a "Rahees Khan <john.doe@example.com>" abc123 mynewimage:v1
+```
+##### Common Use Cases
+**Save Changes:** Capture changes made to a container's filesystem after it has been started.
+**Create Custom Images:** Build custom Docker images that include updates or modifications specific to your use case.
+**Reproduce Environments:** Save the state of a container to reproduce the environment or configuration across different systems or teams.
+
+<img width="1475" alt="image" src="https://github.com/user-attachments/assets/f1f9d908-a27b-4c3e-8933-7b9354fdc1bc">
+
+----
+### Docker rmi
+The docker rmi command is used to remove Docker images from your local Docker environment. This command is helpful for cleaning up unused images, freeing up disk space, and managing your image repository.
+
+1. Remove a Single Image
+```
+docker rmi <image_name_or_id>
+```
+2. Remove Multiple Images
+```
+docker rmi myimage:latest myimage:old
+```
+4. Remove All Unused Images
+```
+docker image prune
+```
+5. This command will prompt you for confirmation before deleting the unused images. To bypass the confirmation prompt, use:
+```
+docker image prune -f
+```
+6. Remove all unused images, not just dangling ones, with:
+```
+docker image prune -a
+```
+<img width="1019" alt="image" src="https://github.com/user-attachments/assets/31b363d6-eab5-4ae1-991d-04201fb192a7">
+
+----
+### Docker run
 Commands to run the application inside a docker container
 
 `docker run docker run -d -p 8080:8080 rahees9983/simple-webapp-color:v1` 
@@ -43,11 +278,24 @@ http://18.224.0.43:8080/upload-title
 
 <img width="1728" alt="image" src="https://github.com/user-attachments/assets/106e9715-b2f6-4bbe-9d3e-6d4b52edb5de">
 
+----
+### Docker logs
+Commands to check the logs inside the docker container
+
+```
+docker logs container-name
+docker logs my-flask-app
+```
+To see the live logs of the container use -f parameter
+```
+docker logs -f my-flask-app
+```
+----
+### Docker volume
+
 #### If my container get removed my data in my case my uploaded file will be lost to persist the uploaded file we have to use docker volumes
 
 Volumes are a Docker-managed storage mechanism. They are stored in a part of the host filesystem which is managed by Docker (/var/lib/docker/volumes/ on Linux) and are designed to persist data beyond the lifecycle of individual containers.
-
-### Docker volume
 
 You can create a volume using the docker volume create command:
 
@@ -211,12 +459,9 @@ docker myapp4:/usr/src/app/templates ./          # this is will create a folder 
 docker cp myapp4:/usr/src/app/templates ./akki   # this is will create a folder name akki
 docker cp myapp4:/usr/src/app/templates/hello.html ./ 
 ```
-
 ----
 ### Docker create
-
 The docker create command is used to create a new container from a Docker image, but unlike docker run, it does not start the container immediately. Instead, it creates the container and provides its ID, allowing you to start it later using docker start.
-
 ```
 docker create --name mynginx -p 8080:80 nginx
 ```
@@ -249,6 +494,38 @@ In the above example, Docker will wait 20 seconds for the container to stop grac
 > **Graceful Shutdown:** Containers should handle the SIGTERM signal gracefully and perform any necessary cleanup before exiting.
 > **Forceful Stop:** If a container does not stop gracefully within the timeout period, Docker will forcefully terminate it with SIGKILL.
 
+----
+### Docker kill 
+The docker rm command is used to remove one or more Docker containers. This command is useful for cleaning up containers that are no longer needed or for freeing up system resources. Containers need to be stopped before they can be removed.
+
+#### Basic Usage of docker rm
+```
+docker rm <container_name_or_id>
+docker rm mycontainer
+```
+1. Remove Multiple Containers
+```
+docker rm container1 container2 container3
+```
+2. Remove All Stopped Containers
+```
+docker container prune
+```
+3. The above command will prompt you for confirmation before deleting all stopped containers. To bypass the confirmation prompt, use:
+```
+docker container prune -f
+```
+4. Alternatively, you can use the following command to remove all stopped containers directly:
+```
+docker rm $(docker ps -a -q -f status=exited)
+```
+##### Additional Options and Flags
+**-f, --force:** Forces the removal of a running container by first stopping it.
+**-v, --volumes: **Removes the volumes associated with the container.
+
+```
+docker rm -v mycontainer
+```
 ----
 ### Docker kill 
 
@@ -291,7 +568,111 @@ docker unpause container-name
 > **Resource Management:** Paused containers do not use CPU resources but still occupy memory and disk space. Unpausing will resume their CPU and memory usage.
 > 
 > **Process Continuity:** When a container is unpaused, it continues from the exact state it was in when it was paused, including its internal processes and open files.
+
 ----
+### Docker port
+The docker port command is used to display the public-facing ports for a specific container. It shows how ports on the container are mapped to ports on the host machine. This command is useful for understanding the port mappings for a running container and diagnosing network-related issues.
+
+```
+docker port container
+```
+<img width="1632" alt="image" src="https://github.com/user-attachments/assets/2d54b98e-effb-47f5-bda8-7e51940eb5ec">
+
+### Common Use Cases
+> [!TIP]
+> **Debugging:** Verifying that the container’s ports are mapped correctly to the host ports, especially when troubleshooting connectivity issues.
+>
+> **Configuration:** Ensuring that the correct ports are exposed and mapped for containers running services that need to be accessed from outside the host.
+>
+> **Testing:** Checking port mappings to ensure that services running inside containers are accessible at the expected ports on the host machine.
+
+----
+### Docker rename
+The docker rename command is used to change the name of an existing Docker container. This can be useful for organizing and managing containers, especially in environments with many containers or when a more descriptive name is needed for clarity.
+
+```
+docker rename old_name new_name
+docker rename myapp1 my-new-app1
+````
+#### Additional Tips
+> [!TIP]
+> **Container Names:** Each container must have a unique name within a Docker host. If you attempt to rename a container to a name that is already in use, Docker will return an error.
+> 
+> **Container IDs:** You can also use the container ID instead of the name in the docker rename command.
+> 
+> **Updating Scripts:** If you have scripts or tools that reference container names, update them to reflect the new container names after renaming.
+> 
+> **Networking and Volumes:** Renaming a container does not affect its networking or volume configurations; only the container name is changed.
+
+----
+### Docker events
+The docker wait command is used to block until a container stops, then prints the container’s exit code. This can be useful for scripting and automation tasks where you need to wait for a container to finish running and determine its exit status.
+
+```
+docker wait container-name
+```
+#### Basic Usage of docker wait
+Wait for a Container to Stop
+To use the docker wait command, provide the container ID or name. The command will block until the container stops and then output the exit code of the container.
+
+Example Walkthrough
+First, start a container. For example, run an Nginx container with the name mynginx:
+```
+docker run --name mynginx nginx
+```
+> [!NOTE]  By default, Nginx containers run indefinitely because the Nginx service doesn’t exit on its own. For this example, you might use a container that exits after completing its task.
+
+In a real scenario, if you have a container that performs a task and then stops, you can use docker wait to wait for it to stop. For example, if you run a container with a command that exits:
+```
+docker run --name mytask -d alpine /bin/sh -c "echo 'Learn DevOps with Rahees Khan ' && sleep 60"
+docker wait mytask
+```
+##### Expected Output:
+
+The command will print the exit code of the container after it stops. For example, if the container exits successfully, you might see:
+0
+
+<img width="1721" alt="image" src="https://github.com/user-attachments/assets/399b32aa-c57d-4508-a87a-3fc6f0bcc1b1">
+
+> [!TIP]
+> **Exit Codes:** The exit code provides information about how the container finished. A code of 0 usually indicates success, while non-zero codes indicate errors.
+>
+> **Scripting:** docker wait is particularly useful in shell scripts or CI/CD pipelines where you need to ensure a container has finished its task and to capture its result.
+>
+> **Blocking Behavior:** The command blocks until the container stops, so it is not suitable for use in interactive environments where you need to continue working while waiting for the container to stop.
+
+Common Use Cases
+
+> [!IMPORTANT]
+> **Automation:** In automated workflows, you might need to run a container, wait for it to complete, and then take actions based on its exit status.
+> 
+> **Testing:** During automated testing, waiting for a container to complete its execution and checking the exit code helps determine if tests passed or failed.
+>
+> **Resource Cleanup:** Waiting for containers to stop before performing cleanup or resource release operations.
+
+----
+### Docker diff
+The docker diff command is used to inspect changes made to the filesystem of a Docker container compared to its original image. It shows the differences in the filesystem of a container since it was started from the image, including files added, modified, or deleted. This command is useful for debugging and understanding what changes a container has made during its execution.
+
+Basic Usage of docker diff
+
+```
+docker diff container-name
+```
+#### Interpreting the Output
+The command outputs a list of changes made to the container’s filesystem, with each change listed with a prefix indicating the type of change:
+
+> [!NOTE]
+> A: A file or directory was added.
+> 
+> C: A file or directory was changed.
+>
+> D: A file or directory was deleted.
+<img width="1728" alt="image" src="https://github.com/user-attachments/assets/f860674f-9440-4c47-a60d-7f6cd0950227">
+
+----
+
+
 ### Docker events
 Docker events is a command used to monitor real-time events from the Docker daemon. This command is particularly useful for tracking the activities and status changes of Docker containers, images, volumes, and networks. You can use it to see events such as container start, stop, or other changes in real time.
 
@@ -336,5 +717,3 @@ docker events --filter type=container|image|network|volume
 #### The details inside of the docker container are below 
 
 <img width="1521" alt="image" src="https://github.com/user-attachments/assets/8fe86c1d-9504-4099-872b-06da4330f1fa">
-
-
