@@ -1,0 +1,3 @@
+This is a testfile.txt
+This file is inside a EC2 instance
+Sat Aug 31 11:35:28 UTC 2024

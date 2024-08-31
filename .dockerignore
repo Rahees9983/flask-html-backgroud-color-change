@@ -1,0 +1,4 @@
+.git
+./run-in-docker
+./run-in-k8s
+./run-on-localhost 

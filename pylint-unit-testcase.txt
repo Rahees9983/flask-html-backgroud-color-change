@@ -1,0 +1,12 @@
+1. To use static code analysis follow below command
+I need pylint
+to get this use 
+$ pip install pylint 
+or 
+add it in the requirement.txt
+
+$ pylint -v pylint3-app.py 
+
+2. For static code analysis
+
+$ pytest -v test_app.py
