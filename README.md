@@ -6,6 +6,17 @@ There is one more feature in this application you can upload file and can store 
 
 Inside app.py I have defined a varaible named `UPLOAD_FOLDER` which holds the value for the folder name where we want to store the file inside container. The value of `UPLOAD_FOLDER` is hardcoded to `/rahees-uploaded-files` inside app.py this folder will be created inside the container. If you want to pass any other path to store the files you can pass it using environment variable.
 
+Execute below command to activate python environment 
+source /home/ubuntu/my-venv/bin/activate
+
+Execute below command for unit test execution 
+(my-venv) root@ip-172-31-34-134:/home/ubuntu/flask-html-backgroud-color-change/run-in-docker# python -m pytest -v unit-test-for-app.py 
+
+Execute below command for static code analysis using pylint
+(my-venv) root@ip-172-31-34-134:/home/ubuntu/flask-html-backgroud-color-change/run-in-docker# python -m pylint -v app.py 
+
+
+
 ----
 ### Docker build
 The docker build command is used to create a Docker image from a Dockerfile. 
