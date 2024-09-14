@@ -463,7 +463,7 @@ If you want to copy a file or folder inside a docker container from localhost us
 
 ```
 docker cp file1.txt conatiner-name:/ur-destination
-docker cp -r /folder container-name/ur-destination
+docker cp /folder container-name/ur-destination
 ```
 If you want to copy a file or folder from a docker container to localhost use below command
 ```
