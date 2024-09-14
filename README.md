@@ -622,12 +622,113 @@ docker rename myapp1 my-new-app1
 > **Networking and Volumes:** Renaming a container does not affect its networking or volume configurations; only the container name is changed.
 
 ----
-### Docker events
-The docker wait command is used to block until a container stops, then prints the container’s exit code. This can be useful for scripting and automation tasks where you need to wait for a container to finish running and determine its exit status.
+### Docker network
+Docker networking is a core aspect of how Docker containers communicate both with each other and with the external world. Docker provides several options for networking, each designed to address different use cases, from simple container-to-container communication to complex, multi-host setups.
 
+#### Types of Docker Networks
+
+1. Bridge Network (Default Network)
+This is the default network for standalone containers.
+Containers in the same bridge network can communicate with each other using their IP addresses or container names.
+If you don't specify a network when running a container, it gets attached to this default bridge network.
 ```
-docker wait container-name
+docker network create rahees-bridge
+docker run -d --network rahees-bridge --name container1 my-app
+docker run -d --network rahees-bridge --name container2 my-app
 ```
+
+2. **Host Network**
+In this mode, the container shares the host’s networking stack and IP address.
+It bypasses Docker’s own network isolation and allows the container to communicate directly with the host's network.
+Useful when you need to minimize network latency or directly access host services.
+```
+docker run --network host my-app
+```
+
+3. **Overlay Network**
+
+Typically used in Docker Swarm or Kubernetes setups.
+It enables containers on different Docker hosts to communicate with each other.
+It requires a key-value store (like Consul, etcd, or ZooKeeper) to maintain the network state.
+```
+docker network create --driver overlay my-overlay
+docker service create --name my-service --network my-overlay my-app
+```
+4. **None Network**
+
+Completely disables networking for the container.
+Used in cases where you need full isolation from the network (for example, for security purposes).
+```
+docker run --network none my-app
+```
+5. **Macvlan Network**
+
+Provides the ability to assign a MAC address to containers.
+Containers can appear as physical devices on the network, and they get their own IP addresses.
+Used when containers need to be directly accessible on the local network with a dedicated IP.
+```
+docker network create -d macvlan --subnet=192.168.1.0/24 --gateway=192.168.1.1 -o parent=eth0 my-macvlan
+docker run --network my-macvlan --ip 192.168.1.100 my-app
+```
+
+#### Types of Docker Drivers:
+
+The following network drivers are available by default, and provide core networking functionality:
+
+Driver	Description
+1. **bridge**  
+   The default network driver.
+
+2. **host**  
+   Remove network isolation between the container and the Docker host.
+
+3. **none**  
+   Completely isolate a container from the host and other containers.
+
+4. **overlay**  
+   Overlay networks connect multiple Docker daemons together.
+
+5. **ipvlan**  
+   IPvlan networks provide full control over both IPv4 and IPv6 addressing.
+
+6. **macvlan**  
+   Assign a MAC address to a container.
+
+#### Key Docker Networking Commands:
+```
+docker network ls
+docker network inspect <network_name_or_id>
+docker network create --driver bridge my-network
+docker network connect <network_name> <container_name>
+docker network disconnect <network_name> <container_name>
+docker network rm <network_name_or_id>
+docker network prune
+```
+#### DNS in Docker Networks:
+Docker has an internal DNS server that maps container names to their IP addresses. Containers can communicate with each other by referring to their container names.
+Example: Multi-container Setup with Bridge Network
+Create a bridge network:
+
+docker network create rahees-bridge
+Run two containers on the same network:
+```
+docker run -d --network rahees-bridge --name web nginx
+docker run -d --network rahees-bridge --name db postgres
+docekr run --name cntr-in-other-ntwrk nginx
+docker exec -i db sh -c "ping web"
+docker exec -i web sh -c "ping db"
+docker exec -i web sh -c "cat /etc/resolve.cof"
+docker exec -i cntr-in-other-ntwrk sh -c "ping db"  ## will fail
+docker network connect rahees-bridge cntr-in-other-ntwrk
+docker exec -i cntr-in-other-ntwrk sh -c "ping db"  ## will pass and able to ping
+docker inspect network rahees-bridge
+docker network disconnect rahees-bridge cntr-in-other-ntwrk
+docker network prune
+```
+Containers can now communicate with each other by their names (e.g., web can communicate with db using the hostname db).
+
+## Give the demo and take referene from UR Google Doc explain internal DNS and use docker network connect command as well
+
 #### Basic Usage of docker wait
 Wait for a Container to Stop
 To use the docker wait command, provide the container ID or name. The command will block until the container stops and then output the exit code of the container.
@@ -726,6 +827,7 @@ docker events --filter type=container|image|network|volume
     docker events --filter type=volume
     docker events --filter type=network
   ```  
+
 
 
 
